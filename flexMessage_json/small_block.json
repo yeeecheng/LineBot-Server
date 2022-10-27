@@ -102,7 +102,7 @@
             "action": {
               "type": "message",
               "label": "選擇",
-              "text": "感測器"
+              "text": "詳細資料"
             },
             "height": "sm"
           }

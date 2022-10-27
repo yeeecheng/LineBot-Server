@@ -2,12 +2,10 @@ import json
 import requests
 
 def get_farm_by_farmId(id,accessToken):
-    
     url = f"http://114.33.145.3/api/farms/{id}"
     headers={"Content-Type": "application/json","Authorization":f"Bearer {accessToken}"}
     data = requests.get(url=url,headers=headers)
     farm_all_data = json.loads(data.text)
-
     return farm_all_data
 
 def get_block_by_blockId(id,accessToken):
@@ -47,14 +45,22 @@ def get_all_noteInfo(accessToken):
 
     return all_noteInfo
 
-def update_by_lineId(userId,lineId,access_token):
+def update_lineId_by_userId(userId,lineId,accessToken):
     
     url = f"http://114.33.145.3/api/users/{userId}"
-    headers={"Content-Type": "application/json","Authorization":f"Bearer {access_token}"}
+    headers={"Content-Type": "application/json","Authorization":f"Bearer {accessToken}"}
     body={"LINE_ID":lineId}
     
     requests.put(url=url,headers=headers,data=json.dumps(body))
     
+
+def update_lineSmallBlock_by_userId(userId,lineSmallBlock,accessToken):
+    url = f"http://114.33.145.3/api/users/{userId}"
+    headers={"Content-Type": "application/json","Authorization":f"Bearer {accessToken}"}
+    body={"lineSmallBlockId":lineSmallBlock}
+    
+    requests.put(url=url,headers=headers,data=json.dumps(body))
+
 
 def get_userInfo_by_lineId(lineId):
     
@@ -68,6 +74,15 @@ def get_userInfo_by_lineId(lineId):
     
     return userInfo
 
+
+def get_user_choose_area_by_smallBlockId(userId,accessToken):
+    
+    url =f"http://114.33.145.3/api/smallBlocks/line/{userId}"
+    headers={"Content-Type": "application/json","Authorization":f"Bearer {accessToken}"}
+    data = requests.get(url=url,headers=headers)
+    all_noteInfo = json.loads(data.text)
+
+    return all_noteInfo
 def push_loginWeb_to_user(user_id,access_token ,linkToken):
     url = "https://api.line.me/v2/bot/message/push"
     headers={"Content-Type": "application/json","Authorization":f"Bearer {access_token}"}

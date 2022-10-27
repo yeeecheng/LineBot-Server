@@ -1,0 +1,34 @@
+
+{
+  "type": "bubble",
+  "size": "kilo",
+  "hero": {
+    "type": "image",
+    "url": "https://github.com/yeeecheng/LineBot-Server/blob/main/LogoMakr-1nQ3tu.png?raw=true",
+    "size": "xl",
+    "aspectMode": "fit",
+    "action": {
+      "type": "uri",
+      "uri": "https://linecorp.com"
+    },
+    "offsetTop": "10px",
+    "offsetBottom": "10px"
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "button",
+        "style": "primary",
+        "color": "#388E3C",
+        "margin": "xxl",
+        "action": {
+          "type": "uri",
+          "label": "點擊進入",
+          "uri": "http://114.33.145.3"
+        }
+      }
+    ]
+  }
+}

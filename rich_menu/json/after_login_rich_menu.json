@@ -64,8 +64,8 @@
                 "height": 578
             },
             "action": {
-                "type": "uri",
-                "uri": "http://114.33.145.3/#/login"
+                "type": "message",
+                "text": "進入官網"
             }
         },
         {

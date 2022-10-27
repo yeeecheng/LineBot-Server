@@ -32,10 +32,7 @@ temperature_low = 25
 temperature_high = 40
 humidity_low = 70
 
-#where the user target 
-farm_id = 1
-block_id = 1
-small_block_id = 1
+
 
 
 #callback by line platform 
@@ -67,7 +64,7 @@ def warning_note():
 
 @app.errorhandler(Exception)
 def error_handle(e):
-
+    print(e)
     return  "Error"
 
 
@@ -100,12 +97,13 @@ def handle_unfollow(event):
     accessToken = userInfo["accessToken"]
 
     #change the lineId to none,represents the user hasn't following the lineBot
-    call_api.update_by_lineId(userId ,"none" , accessToken)
+    call_api.update_lineId_by_userId(userId ,"none" , accessToken)
 
 #reply result of account link  ,when type is accountLink
 @handler.add(AccountLinkEvent)
 def handle_accountLink(event):
     link_result = event.link.result
+    print(link_result)
     if link_result == 'ok':
 
 
@@ -125,7 +123,7 @@ def handle_accountLink(event):
         userId = event.link.nonce.split("|")[0]
         accessToken = event.link.nonce.split("|")[1] 
         #update lineId
-        call_api.update_by_lineId(userId,event.source.user_id,accessToken)
+        call_api.update_lineId_by_userId(userId,event.source.user_id,accessToken)
 
         line_bot_api.reply_message(event.reply_token,TextSendMessage("綁定成功"))
     else :
@@ -142,10 +140,12 @@ def handle_message(event):
     if userInfo !="":
         accessToken = userInfo["accessToken"]
         userId = userInfo["id"]
-    
-    global small_block_id 
-    global  block_id
-    
+        small_block_id = userInfo["lineSmallBlockId"]
+        smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
+        small_block_name = smallBlockInfo["name"]
+        farm_id = smallBlockInfo["block"]["farm"]["id"]
+
+
     #account linking 
     if "綁定帳號" in message: 
 
@@ -197,6 +197,7 @@ def handle_message(event):
             print(e.error.message)
     
     elif "農場" in message:
+
         
         #load flexMessage block.json
         FlexMessage = json.load(open('flexMessage_json/block.json','r',encoding='utf-8'))
@@ -243,6 +244,7 @@ def handle_message(event):
         #set block id
         if len(message.split("_")) > 1:
             block_id = message.split("_")[1] 
+            print(block_id)
         
         #load flexMessage small_block.json
         FlexMessage = json.load(open('flexMessage_json/small_block.json','r',encoding='utf-8'))
@@ -261,7 +263,7 @@ def handle_message(event):
             
             #set name of greenhouse
             item["header"]["contents"][0]["text"] = block_info["smallBlocks"][small_block_index]["name"]
-            item["footer"]["contents"][0]["action"]["text"] = "感測器_"+str(block_info["smallBlocks"][small_block_index]["id"])
+            item["footer"]["contents"][0]["action"]["text"] = "詳細資料_"+str(block_info["smallBlocks"][small_block_index]["id"])
             
             #get sensor data 
             small_blocks_data = call_api.get_sensor_newest_data_by_smallBlockId(block_info["smallBlocks"][small_block_index]["id"],accessToken)
@@ -284,11 +286,68 @@ def handle_message(event):
             print(e.error.message)
 
     elif "感測器" in message:
+        
+
+        #set block id
+        if len(message.split("_")) > 1:
+            block_id = message.split("_")[1] 
+        else :
+            small_block_id = userInfo["lineSmallBlockId"]
+            smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
+            block_id = smallBlockInfo["block"]["id"]
+        print(block_id)
+        #load flexMessage small_block.json
+        FlexMessage = json.load(open('flexMessage_json/small_block.json','r',encoding='utf-8'))
+    
+        #get all small block information 
+        block_info = call_api.get_block_by_blockId(block_id,accessToken)
+
+        #amount of small block 
+        small_block_amount = len(block_info["smallBlocks"]) if len(block_info["smallBlocks"]) < 12 else 12
+        
+        #create flexMessage
+        FlexMessage["contents"] = [ copy.deepcopy(FlexMessage["contents"][0]) for _ in range(small_block_amount)]
+
+        #set detail
+        for   small_block_index ,item in enumerate( FlexMessage["contents"]):
+            
+            cur_small_block_id = block_info["smallBlocks"][small_block_index]["id"]
+            #set name of greenhouse
+            item["header"]["contents"][0]["text"] = block_info["smallBlocks"][small_block_index]["name"]
+            item["footer"]["contents"][0]["action"]["type"] = "uri"
+            item["footer"]["contents"][0]["action"]["label"] = "點擊查看"
+            item["footer"]["contents"][0]["action"]["uri"] = f"http://114.33.145.3/#/sp/{cur_small_block_id}?{farm_id}&{userId}&{accessToken}"
+            
+            #get sensor data 
+            small_blocks_data = call_api.get_sensor_newest_data_by_smallBlockId(block_info["smallBlocks"][small_block_index]["id"],accessToken)
+
+            #set value condition 
+            health_data = smallBlockArea_set_sensor_condition(small_blocks_data["healthDatas"],FlexMessage , small_block_index  ,0)
+            humidity_data = smallBlockArea_set_sensor_condition(small_blocks_data["humidityDatas"],FlexMessage , small_block_index ,1)
+            temperature_data = smallBlockArea_set_sensor_condition(small_blocks_data["temperatureDatas"],FlexMessage , small_block_index  ,2)
+
+            if check_health(health_data):
+                    item["body"]["contents"][0]["contents"][1]['color'] ="#ff0000"
+            if check_humidity(humidity_data):
+                    item["body"]["contents"][1]["contents"][1]['color'] ="#ff0000"
+            if  check_temperature(temperature_data):
+                    item["body"]["contents"][2]["contents"][1]['color'] ="#ff0000"
+
+        place = block_info["name"]
+        reply_arr=[TextSendMessage(f"目前為在 {place}"),FlexSendMessage('感測器整理',FlexMessage)]    
+        try:
+            
+            line_bot_api.reply_message(event.reply_token,reply_arr)
+        except LineBotApiError as e:
+            print(e.error.message)
+
+    elif "詳細資料" in message:
 
         #set small_block id
         if len(message.split("_")) > 1:
             small_block_id = message.split("_")[1] 
-        
+            call_api.update_lineSmallBlock_by_userId(userId,small_block_id,accessToken)
+
         block_id = call_api.get_sensor_newest_data_by_smallBlockId(small_block_id,accessToken)["blockId"]
 
         #load flexMessage sensor.json
@@ -356,18 +415,29 @@ def handle_message(event):
 
     elif "即時影像" in message:
         
-        block_name = call_api.get_block_by_blockId(block_id,accessToken)["name"]
-        small_block_name = call_api.get_sensor_newest_data_by_smallBlockId(small_block_id,accessToken)["name"]
-        
+        small_block_id = userInfo["lineSmallBlockId"]
+        smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
+        block_name = smallBlockInfo["block"]["name"]
         FlexMessage =json.load(open('flexMessage_json/live_stream.json','r',encoding='utf-8'))
         FlexMessage["body"]["contents"][1]["contents"][0]["contents"][0]["text"]=f"{block_name} {small_block_name}"
         FlexMessage["footer"]["contents"][0]["action"]["uri"] = f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
-
         try:
             line_bot_api.reply_message(
                 event.reply_token,FlexSendMessage("即時影像",FlexMessage))
         except LineBotApiError as e:
             print(e.error.message)
+
+    elif "官網" in message:
+
+        FlexMessage =json.load(open('flexMessage_json/goto_web.json','r',encoding='utf-8'))
+        FlexMessage["footer"]["contents"][0]["action"]["uri"]=f"http://114.33.145.3/#/home?{farm_id}&{userId}&{accessToken}"
+        
+        try:
+            line_bot_api.reply_message(
+                event.reply_token,FlexSendMessage("官網連結",FlexMessage))
+        except LineBotApiError as e:
+            print(e.error.message)
+            
     else :
         
         try:
@@ -473,7 +543,7 @@ def sensorArea_value_is_none(FlexMessage,idx):
 
 
 def push_warning_note_to_user(body):
-    
+
     all_user_lineId_and_userId = body["farm"]["users"]
     noteInfo = body["note"]
     
@@ -489,21 +559,24 @@ def push_warning_note_to_user(body):
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][3]["text"] = note_content[2]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][4]["text"] = note_content[3]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][5]["text"] = noteInfo["updatedAt"]
-    
+
     for item in all_user_lineId_and_userId :
         
-        item["LINE_ID"] ="Ub1afb95bbb313d55b5f02749d68a86d6"
-
+       
         if item["LINE_ID"]!= "null":
             
             lineId = item["LINE_ID"]
             userId = item["id"]
-            accessToken = call_api.get_userInfo_by_lineId(lineId)
-            FlexMessage["footer"]["contents"][0]["uri"] = f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
-            
+            accessToken = call_api.get_userInfo_by_lineId(lineId)["accessToken"]
+            userInfo = call_api.get_userInfo_by_lineId(lineId)
+            if userInfo !="":
+                small_block_id = noteInfo["smallBlockId"]
+                smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
+                farm_id = smallBlockInfo["block"]["farm"]["id"]
+            FlexMessage["footer"]["contents"][0]["action"]["uri"] = f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
             try:
-                #line_bot_api.push_message(lineId, FlexSendMessage("緊急通知",FlexMessage))
-                line_bot_api.push_message("Ub1afb95bbb313d55b5f02749d68a86d6", FlexSendMessage("緊急通知",FlexMessage))
+                line_bot_api.push_message(lineId, FlexSendMessage("緊急通知",FlexMessage))
+                #line_bot_api.push_message("Ub1afb95bbb313d55b5f02749d68a86d6", FlexSendMessage("緊急通知",FlexMessage))
                 break
             except LineBotApiError as e:
                 print(e.error.message)
