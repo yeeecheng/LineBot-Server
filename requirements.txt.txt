@@ -1,0 +1,6 @@
+line-bot-sdk
+flask
+json
+requests
+configparser
+copy

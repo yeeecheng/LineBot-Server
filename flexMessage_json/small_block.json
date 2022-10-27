@@ -1,0 +1,113 @@
+{
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "size": "micro",
+      "header": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "第1攝影機",
+            "color": "#ffffff",
+            "align": "start",
+            "size": "md",
+            "gravity": "center"
+          }
+        ],
+        "backgroundColor": "#388E3C",
+        "paddingTop": "19px",
+        "paddingAll": "12px",
+        "paddingBottom": "16px"
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "text",
+                "text": "健康度",
+                "color": "#000000",
+                "size": "sm",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "80%",
+                "size": "sm",
+                "align": "end",
+                "color": "#159c6d"
+              }
+            ],
+            "flex": 1
+          },
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "text",
+                "text": "濕度",
+                "color": "#000000",
+                "size": "sm",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "80%",
+                "size": "sm",
+                "align": "end",
+                "color": "#159c6d"
+              }
+            ],
+            "flex": 1
+          },
+          {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+              {
+                "type": "text",
+                "text": "溫度",
+                "color": "#000000",
+                "size": "sm",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "32°C",
+                "size": "sm",
+                "align": "end",
+                "color": "#159c6d"
+              }
+            ],
+            "flex": 1
+          }
+        ],
+        "spacing": "md",
+        "paddingTop": "20px"
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "button",
+            "action": {
+              "type": "message",
+              "label": "選擇",
+              "text": "感測器"
+            },
+            "height": "sm"
+          }
+        ]
+      }
+    }
+  ]
+}

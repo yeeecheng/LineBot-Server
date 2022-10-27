@@ -1,0 +1,161 @@
+{
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "size": "kilo",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "weight": "bold",
+                "size": "lg",
+                "wrap": true,
+                "text": "健康度低於標準",
+                "color": "#000000"
+              },
+              {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                      {
+                        "type": "text",
+                        "text": "你的農場現在出現嚴重枯黃問題，現在的健康度為60%，溫度為28°C，濕度80%RH",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5
+                      },
+                      {
+                        "type": "text",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5,
+                        "text": "2022-10-26 14:37:34"
+                      }
+                    ]
+                  }
+                ],
+                "margin": "5px"
+              }
+            ],
+            "offsetBottom": "5px",
+            "paddingStart": "5px",
+            "paddingEnd": "5px",
+            "paddingTop": "2px"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "weight": "bold",
+                "size": "lg",
+                "wrap": true,
+                "text": "健康度低於標準",
+                "color": "#000000"
+              },
+              {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                      {
+                        "type": "text",
+                        "text": "你的農場現在出現嚴重枯黃問題，現在的健康度為60%，溫度為28°C，濕度80%RH",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5
+                      },
+                      {
+                        "type": "text",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5,
+                        "text": "2022-10-26 14:37:34"
+                      }
+                    ]
+                  }
+                ],
+                "margin": "5px"
+              }
+            ],
+            "offsetBottom": "5px",
+            "margin": "lg",
+            "paddingStart": "5px",
+            "paddingEnd": "5px",
+            "paddingTop": "2px"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "weight": "bold",
+                "size": "lg",
+                "wrap": true,
+                "text": "健康度低於標準",
+                "color": "#000000"
+              },
+              {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "box",
+                    "layout": "vertical",
+                    "spacing": "sm",
+                    "contents": [
+                      {
+                        "type": "text",
+                        "text": "你的農場現在出現嚴重枯黃問題，現在的健康度為60%，溫度為28°C，濕度80%RH",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5
+                      },
+                      {
+                        "type": "text",
+                        "wrap": true,
+                        "color": "#8c8c8c",
+                        "size": "sm",
+                        "flex": 5,
+                        "text": "2022-10-26 14:37:34"
+                      }
+                    ]
+                  }
+                ],
+                "margin": "5px"
+              }
+            ],
+            "paddingStart": "5px",
+            "paddingEnd": "5px",
+            "paddingTop": "2px"
+          }
+        ],
+        "spacing": "sm",
+        "paddingAll": "13px"
+      }
+    }
+  ]
+}

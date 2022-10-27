@@ -1,0 +1,59 @@
+{
+    "size": {
+        "width": 2500,
+        "height": 1686
+    },
+    "selected": "False",
+    "name": "before login",
+    "chatBarText": "Tap to open",
+    "areas": [
+        {
+            "bounds": {
+                "x": 110,
+                "y": 100,
+                "width": 2279,
+                "height": 633
+            },
+            "action": {
+                "type": "message",
+                "text": "綁定帳號"
+            }
+        },
+        {
+            "bounds": {
+                "x": 128,
+                "y": 908,
+                "width": 575,
+                "height": 577
+            },
+            "action": {
+                "type": "message",
+                "text": "介紹產品"
+            }
+        },
+        {
+            "bounds": {
+                "x": 962,
+                "y": 900,
+                "width": 581,
+                "height": 575
+            },
+            "action": {
+                "type": "message",
+                "text": "聯絡資訊"
+            }
+        },
+        {
+            "bounds": {
+                "x": 1808,
+                "y": 907,
+                "width": 555,
+                "height": 555
+            },
+            "action": {
+                "type": "message",
+                "text": "常見問題"
+            }
+        }
+    ]
+}

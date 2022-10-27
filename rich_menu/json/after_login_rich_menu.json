@@ -1,0 +1,84 @@
+{
+    "size": {
+        "width": 2500,
+        "height": 1686
+    },
+    "selected": "False",
+    "name": "after_login",
+    "chatBarText": "Tap to open",
+    "areas": [
+        {
+            "bounds": {
+                "x": 122,
+                "y": 71,
+                "width": 591,
+                "height": 589
+            },
+            "action": {
+                "type": "message",
+                "text": "農場"
+            }
+        },
+        {   
+            "bounds": {
+                "x": 957,
+                "y": 78,
+                "width": 586,
+                "height": 586
+            },
+            "action": {
+                "type": "message",
+                "text": "感測器"
+            }
+        },
+        {   
+            "bounds": {
+                "x": 1786,
+                "y": 72,
+                "width": 595,
+                "height": 594
+            },
+            "action": {
+                "type": "message",
+                "text": "即時影像"
+            }
+        },
+        {   
+
+            "bounds": {
+                "x": 128,
+                "y": 927,
+                "width": 574,
+                "height": 575
+            },
+            "action": {
+                "type": "message",
+                "text": "訊息欄"
+            }
+        },
+        {
+            "bounds": {
+                "x": 961,
+                "y": 925,
+                "width": 579,
+                "height": 578
+            },
+            "action": {
+                "type": "uri",
+                "uri": "http://114.33.145.3/#/login"
+            }
+        },
+        {
+            "bounds": {
+                "x": 1789,
+                "y": 925,
+                "width": 592,
+                "height": 589
+            },
+            "action": {
+                "type": "message",
+                "text": "常見問題"
+            }
+        }
+    ]
+}

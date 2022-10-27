@@ -1,0 +1,105 @@
+{
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "狀況異常",
+        "weight": "bold",
+        "size": "xl",
+        "color": "#ff0000"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "lg",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "vertical",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "你的農場現在出現嚴重枯黃問題",
+                "wrap": true,
+                "color": "#666666",
+                "size": "md",
+                "flex": 5,
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "位於區塊1 第1攝影機",
+                "wrap": true,
+                "color": "#666666",
+                "size": "md",
+                "flex": 5,
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "健康度為60%",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              },
+              {
+                "type": "text",
+                "text": "溫度為28°C",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              },
+              {
+                "type": "text",
+                "text": "濕度80%RH",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              },
+              {
+                "type": "text",
+                "text": "2022-10-26 14:37:22",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "uri",
+          "label": "前往查看",
+          "uri": "http://114.33.145.3/#/sp/1?"
+        }
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [],
+        "margin": "sm"
+      }
+    ],
+    "flex": 0
+  }
+}
