@@ -1,15 +1,12 @@
 import configparser
 import json
 import copy
-
-from flask import Flask, request, abort ,jsonify
+from flask import Flask, request, abort 
 from linebot import (
     LineBotApi,
     WebhookHandler
 )
-
 from linebot.models import *
-
 from linebot.exceptions import (
     InvalidSignatureError
 )
@@ -230,15 +227,7 @@ def handle_message(event):
                 temperature_data = blockArea_set_sensor_condition(small_blocks_data["temperatureDatas"])
 
                 #set condition
-                status =  False
-                if health_data !=None :
-                    status = status  or (float(health_data) < health_low)
-                    
-                if humidity_data != None:
-                    status = status  or (float(humidity_data) < humidity_low )
-            
-                if  temperature_data != None :
-                    status = status or (float(temperature_data) <  temperature_low  or float(temperature_data) >  temperature_high) 
+                status = check_health(health_data) or check_humidity(humidity_data) or check_temperature(temperature_data)
             
                 if status:
                     item["body"]["contents"][0]["contents"][0]["text"] = "異常"
@@ -282,14 +271,11 @@ def handle_message(event):
             humidity_data = smallBlockArea_set_sensor_condition(small_blocks_data["humidityDatas"],FlexMessage , small_block_index ,1)
             temperature_data = smallBlockArea_set_sensor_condition(small_blocks_data["temperatureDatas"],FlexMessage , small_block_index  ,2)
 
-            if health_data != None :
-                if float(health_data) < health_low:
+            if check_health(health_data):
                     item["body"]["contents"][0]["contents"][1]['color'] ="#ff0000"
-            if humidity_data != None :
-                if float(humidity_data) < humidity_low:
+            if check_humidity(humidity_data):
                     item["body"]["contents"][1]["contents"][1]['color'] ="#ff0000"
-            if temperature_data != None:
-                if float(temperature_data) < temperature_low or float(temperature_data) > temperature_high:
+            if  check_temperature(temperature_data):
                     item["body"]["contents"][2]["contents"][1]['color'] ="#ff0000"
 
         try:
@@ -317,18 +303,15 @@ def handle_message(event):
         temperature_data = sensorArea_set_sensor_condition(small_blocks_data["temperatureDatas"],FlexMessage , 2 )
     
         #check value out of range
-        if health_data != None :
-            if float(health_data) < health_low:
-                sensorArea_value_is_abnormal(FlexMessage,0)
-                FlexMessage["contents"][0]["header"]["contents"][2]["contents"][0]["width"]=f"{health_data}%"
-        if humidity_data != None :
-            if float(humidity_data) < humidity_low:
-                sensorArea_value_is_abnormal(FlexMessage,1)
-                FlexMessage["contents"][1]["header"]["contents"][2]["contents"][0]["width"]=f"{humidity_data}%"
-        if temperature_data != None :
-            if float(temperature_data) < temperature_low or float(temperature_data) > temperature_high:
-                sensorArea_value_is_abnormal(FlexMessage,2)
-                FlexMessage["contents"][2]["header"]["contents"][2]["contents"][0]["width"]=f"{temperature_data}%"
+        if check_health(health_data):
+            sensorArea_value_is_abnormal(FlexMessage,0)
+            FlexMessage["contents"][0]["header"]["contents"][2]["contents"][0]["width"]=f"{health_data}%"
+        if check_humidity(humidity_data):
+            sensorArea_value_is_abnormal(FlexMessage,1)
+            FlexMessage["contents"][1]["header"]["contents"][2]["contents"][0]["width"]=f"{humidity_data}%"
+        if check_temperature(temperature_data):
+            sensorArea_value_is_abnormal(FlexMessage,2)
+            FlexMessage["contents"][2]["header"]["contents"][2]["contents"][0]["width"]=f"{temperature_data}%"
         
         set_progress_bar(FlexMessage, health_data,0)
         set_progress_bar(FlexMessage, humidity_data,1)
@@ -338,8 +321,6 @@ def handle_message(event):
         for idx in range (amount_sensor):
             FlexMessage["contents"][idx]["footer"]["contents"][0]["action"]["uri"]=f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
 
-        
-        print(FlexMessage["contents"][0]["footer"]["contents"][0]["action"]["uri"])
         #get block name and smallBlock name
         block_name = call_api.get_block_by_blockId(block_id,accessToken)["name"]
         small_block_name = small_blocks_data["name"]
@@ -381,7 +362,7 @@ def handle_message(event):
         FlexMessage =json.load(open('flexMessage_json/live_stream.json','r',encoding='utf-8'))
         FlexMessage["body"]["contents"][1]["contents"][0]["contents"][0]["text"]=f"{block_name} {small_block_name}"
         FlexMessage["footer"]["contents"][0]["action"]["uri"] = f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
-        print(FlexMessage["footer"]["contents"][0]["action"]["uri"] )
+
         try:
             line_bot_api.reply_message(
                 event.reply_token,FlexSendMessage("即時影像",FlexMessage))
@@ -401,8 +382,26 @@ def set_progress_bar(FlexMessage ,data,idx):
     else :
         FlexMessage["contents"][idx]["header"]["contents"][2]["contents"][0]["width"]=f"{data}%"
 
+def check_health(data):
+    
+    if data != None :
+        return float(data) < health_low
+    
+    return False
 
+def check_humidity(data):
+    
+    if data != None :
+        return float(data) < humidity_low
+    
+    return False
 
+def check_temperature(data):
+    
+    if data != None :
+            return (float(data) < temperature_low or float(data) > temperature_high)
+    
+    return False
 
 def blockArea_set_sensor_condition(data_list):
 
