@@ -8,8 +8,9 @@ from linebot import (
 )
 from linebot.models import *
 from linebot.exceptions import (
-    InvalidSignatureError
+    InvalidSignatureError,LineBotApiError
 )
+from gevent.pywsgi import WSGIServer
 
 import create_richMenu
 import call_api
@@ -61,6 +62,15 @@ def warning_note():
     
     return 'OK'
 
+#get the note and user data ,when get this uri
+@app.route("/monthly_report",methods=["POST"])
+def monthly_report():
+    
+    body = request.get_json()
+    push_monthly_report_to_user(body)
+    
+    return 'OK'
+
 
 @app.errorhandler(Exception)
 def error_handle(e):
@@ -103,7 +113,7 @@ def handle_unfollow(event):
 @handler.add(AccountLinkEvent)
 def handle_accountLink(event):
     link_result = event.link.result
-    print(link_result)
+
     if link_result == 'ok':
 
 
@@ -244,7 +254,6 @@ def handle_message(event):
         #set block id
         if len(message.split("_")) > 1:
             block_id = message.split("_")[1] 
-            print(block_id)
         
         #load flexMessage small_block.json
         FlexMessage = json.load(open('flexMessage_json/small_block.json','r',encoding='utf-8'))
@@ -295,7 +304,7 @@ def handle_message(event):
             small_block_id = userInfo["lineSmallBlockId"]
             smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
             block_id = smallBlockInfo["block"]["id"]
-        print(block_id)
+        
         #load flexMessage small_block.json
         FlexMessage = json.load(open('flexMessage_json/small_block.json','r',encoding='utf-8'))
     
@@ -562,7 +571,7 @@ def push_warning_note_to_user(body):
 
     for item in all_user_lineId_and_userId :
         
-       
+
         if item["LINE_ID"]!= "null":
             
             lineId = item["LINE_ID"]
@@ -583,5 +592,49 @@ def push_warning_note_to_user(body):
 
 
 
+def push_monthly_report_to_user(body):
+    
+    FlexMessage = json.load(open('flexMessage_json/monthly_report.json','r',encoding='utf-8'))
+    message = body["message"].split("\n")
+    users = body["users"]
+
+    FlexMessage["body"]["contents"][0]["text"] = message[0]
+    name = message[2].split("，")
+    FlexMessage["body"]["contents"][1]["text"] = name[0]+"-"+message[4]
+    FlexMessage["body"]["contents"][2]["text"] = name[1]
+    analysis = message[6].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][0]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][0]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    analysis = message[7].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][1]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][1]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    FlexMessage["body"]["contents"][4]["contents"][2]["contents"][0]["text"] = message[8]
+    analysis = message[10].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][4]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][4]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    analysis = message[11].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][5]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][5]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    FlexMessage["body"]["contents"][4]["contents"][6]["contents"][0]["text"] = message[12]
+    analysis = message[14].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][8]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][8]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    analysis = message[15].split(" ")
+    FlexMessage["body"]["contents"][4]["contents"][9]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
+    FlexMessage["body"]["contents"][4]["contents"][9]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
+    FlexMessage["body"]["contents"][4]["contents"][10]["contents"][0]["text"] = message[16]
+    FlexMessage["body"]["contents"][6]["contents"][0]["text"] = message[20]
+    FlexMessage["body"]["contents"][6]["contents"][1]["text"] =message[21]
+    #message processing 
+
+    for item in users:
+        lineId =item["LINE_ID"]
+        line_bot_api.push_message(lineId, FlexSendMessage("緊急通知",FlexMessage))
+        break
+
+
 if __name__ == "__main__":
+
+    # server  = WSGIServer(('',5000),app)
+    # server.serve_forever()
     app.run(host='0.0.0.0', port=80)
