@@ -57,6 +57,7 @@ def callback():
 @app.route("/warning_note",methods=["POST"])
 def warning_note():
     
+    
     body = request.get_json()
     push_warning_note_to_user(body)
     
@@ -407,15 +408,14 @@ def handle_message(event):
         FlexMessage =json.load(open('flexMessage_json/note.json','r',encoding='utf-8'))
         all_noteInfo = call_api.get_all_noteInfo(accessToken)
         
+        cnt = 0
         for idx in range(len(all_noteInfo)-1,len(all_noteInfo)-3,-1):
-        
-            FlexMessage["contents"][0]["body"]["contents"][idx]["contents"][0]["text"] = all_noteInfo[idx]["title"]
-            
+            FlexMessage["contents"][0]["body"]["contents"][cnt]["contents"][0]["text"] = all_noteInfo[idx]["title"]
             if all_noteInfo[idx]["icon"] == "1":
-                FlexMessage["contents"][0]["body"]["contents"][idx]["contents"][0]["color"]="#ff0000"
-
-            FlexMessage["contents"][0]["body"]["contents"][idx]["contents"][1]["contents"][0]["contents"][0]["text"] = all_noteInfo[idx]["comment"]
-            FlexMessage["contents"][0]["body"]["contents"][idx]["contents"][1]["contents"][0]["contents"][1]["text"] = all_noteInfo[idx]["updatedAt"]
+                FlexMessage["contents"][0]["body"]["contents"][cnt]["contents"][0]["color"]="#ff0000"
+            FlexMessage["contents"][0]["body"]["contents"][cnt]["contents"][1]["contents"][0]["contents"][0]["text"] = all_noteInfo[idx]["comment"]
+            FlexMessage["contents"][0]["body"]["contents"][cnt]["contents"][1]["contents"][0]["contents"][1]["text"] = all_noteInfo[idx]["updatedAt"]
+            cnt+=1
         try:
             line_bot_api.reply_message(
                 event.reply_token,FlexSendMessage("訊息欄",FlexMessage))
@@ -562,31 +562,30 @@ def push_warning_note_to_user(body):
     block_place =noteInfo["smallBlock"]["block"]["name"]
     small_block_place = noteInfo["smallBlock"]["name"]
     place = f"位於{block_place} {small_block_place}"
+    
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][0]["text"] = note_content[0]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][1]["text"] = place
-    FlexMessage["body"]["contents"][1]["contents"][0]["contents"][2]["text"] = note_content[1][3:]
+    FlexMessage["body"]["contents"][1]["contents"][0]["contents"][2]["text"] = note_content[1]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][3]["text"] = note_content[2]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][4]["text"] = note_content[3]
     FlexMessage["body"]["contents"][1]["contents"][0]["contents"][5]["text"] = noteInfo["updatedAt"]
-
     for item in all_user_lineId_and_userId :
         
-
-        if item["LINE_ID"]!= "null":
-            
+        if item["LINE_ID"]!= None and item["LINE_ID"]!= "null" :
             lineId = item["LINE_ID"]
             userId = item["id"]
             accessToken = call_api.get_userInfo_by_lineId(lineId)["accessToken"]
             userInfo = call_api.get_userInfo_by_lineId(lineId)
+
             if userInfo !="":
                 small_block_id = noteInfo["smallBlockId"]
                 smallBlockInfo = call_api.get_user_choose_area_by_smallBlockId(small_block_id,accessToken)
                 farm_id = smallBlockInfo["block"]["farm"]["id"]
+                
             FlexMessage["footer"]["contents"][0]["action"]["uri"] = f"http://114.33.145.3/#/sp/{small_block_id}?{farm_id}&{userId}&{accessToken}"
             try:
                 line_bot_api.push_message(lineId, FlexSendMessage("緊急通知",FlexMessage))
-                #line_bot_api.push_message("Ub1afb95bbb313d55b5f02749d68a86d6", FlexSendMessage("緊急通知",FlexMessage))
-                break
+                
             except LineBotApiError as e:
                 print(e.error.message)
 
@@ -597,40 +596,50 @@ def push_monthly_report_to_user(body):
     FlexMessage = json.load(open('flexMessage_json/monthly_report.json','r',encoding='utf-8'))
     message = body["message"].split("\n")
     users = body["users"]
-
+    
     FlexMessage["body"]["contents"][0]["text"] = message[0]
     name = message[2].split("，")
+
     FlexMessage["body"]["contents"][1]["text"] = name[0]+"-"+message[4]
     FlexMessage["body"]["contents"][2]["text"] = name[1]
     analysis = message[6].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][0]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][0]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     analysis = message[7].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][1]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][1]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     FlexMessage["body"]["contents"][4]["contents"][2]["contents"][0]["text"] = message[8]
     analysis = message[10].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][4]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][4]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     analysis = message[11].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][5]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][5]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     FlexMessage["body"]["contents"][4]["contents"][6]["contents"][0]["text"] = message[12]
     analysis = message[14].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][8]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][8]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     analysis = message[15].split(" ")
+
     FlexMessage["body"]["contents"][4]["contents"][9]["contents"][0]["text"] = analysis[0]+" "+analysis[1]
     FlexMessage["body"]["contents"][4]["contents"][9]["contents"][1]["text"] = analysis[2][3:]+" "+analysis[3]
     FlexMessage["body"]["contents"][4]["contents"][10]["contents"][0]["text"] = message[16]
-    FlexMessage["body"]["contents"][6]["contents"][0]["text"] = message[20]
-    FlexMessage["body"]["contents"][6]["contents"][1]["text"] =message[21]
+    FlexMessage["body"]["contents"][6]["contents"][0]["text"] = message[18]
+    FlexMessage["body"]["contents"][6]["contents"][1]["text"] =message[19]
+
     #message processing 
 
     for item in users:
+    
         lineId =item["LINE_ID"]
-        line_bot_api.push_message(lineId, FlexSendMessage("緊急通知",FlexMessage))
-        break
+        if lineId == "null" or lineId == None:
+            continue
+        line_bot_api.push_message(lineId, FlexSendMessage("每日報表",FlexMessage))
 
 
 if __name__ == "__main__":
