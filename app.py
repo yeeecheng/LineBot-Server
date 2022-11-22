@@ -35,7 +35,6 @@ humidity_low = 70
 
 
 
-
 #callback by line platform 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -644,6 +643,4 @@ def push_monthly_report_to_user(body):
 
 if __name__ == "__main__":
 
-    # server  = WSGIServer(('',5000),app)
-    # server.serve_forever()
     app.run(host='0.0.0.0', port=80)
